@@ -14,7 +14,6 @@ st.set_page_config(
 st.title("🅿️ Deteksi Status Slot Parkir")
 st.write(
     "Unggah gambar area parkir untuk mendeteksi slot yang kosong (empty) dan terisi (filled). "
-    "Aplikasi ini menggunakan model YOLO yang telah di-fine-tune."
 )
 
 MODEL_PATH = 'best.pt'
@@ -81,7 +80,6 @@ def detect_and_draw_on_image(
         cv2.putText(img, text, (x, y), font, scale, text_color, thickness)
 
     font = cv2.FONT_HERSHEY_SIMPLEX
-    # Gunakan warna yang sama dengan kotak untuk teks legenda
     draw_text_with_background(annotated_image_bgr, f"Filled Spots: {stats['filled']}", (30, 50), font, 1, (0, 0, 255), (255,255,255))
     draw_text_with_background(annotated_image_bgr, f"Empty Spots: {stats['empty']}", (30, 100), font, 1, (0, 255, 0), (255,255,255))
     draw_text_with_background(annotated_image_bgr, f"Total Spots: {stats['total']}", (30, 150), font, 1, (0,0,0), (255,255,255))
@@ -119,26 +117,36 @@ if uploaded_file is not None:
 
     if start_detection:
         if model is not None:
-            with col4:
-                with st.spinner('Sedang memproses...'):
+            # Tampilkan spinner di kolom tengah saat memproses
+            with col3:
+                with st.spinner('Memproses...'):
+                    # Panggil fungsi deteksi
                     final_image, stats = detect_and_draw_on_image(
                         input_image=image, 
                         model=model,
                         conf_threshold=0.25
                     )
-
-                    st.subheader("Hasil Deteksi")
-                    st.image(final_image, caption="Gambar dengan deteksi.", use_column_width=True)
-                    
-                    st.divider()
-                    m_col1, m_col2, m_col3 = st.columns(3)
-                    with m_col1:
-                        st.metric(label="Total Slot", value=stats['total'])
-                    with m_col2:
-                        st.metric(label="Terisi", value=stats['filled'])
-                    with m_col3:
-                        st.metric(label="Kosong", value=stats['empty'])
+                    st.session_state.final_image = final_image
+                    st.session_state.stats = stats
         else:
             st.error("Model tidak berhasil dimuat.")
+
+    if st.session_state.final_image is not None:
+        with col4:
+            st.subheader("Hasil Deteksi")
+            st.image(st.session_state.final_image, caption="Gambar dengan deteksi.", use_column_width=True)
+            
+            st.divider()
+            stats = st.session_state.stats
+            m_col1, m_col2, m_col3 = st.columns(3)
+            with m_col1:
+                st.metric(label="Total Slot", value=stats['total'])
+            with m_col2:
+                st.metric(label="Terisi", value=stats['filled'])
+            with m_col3:
+                st.metric(label="Kosong", value=stats['empty'])
+    else:
+        st.info("Silakan unggah sebuah gambar untuk memulai.")
+
 else:
     st.info("Silakan unggah sebuah gambar untuk memulai.")
