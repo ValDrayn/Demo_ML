@@ -18,6 +18,7 @@ st.write(
 
 MODEL_PATH = 'best.pt'
 
+
 @st.cache_resource
 def load_model(model_path):
     try:
@@ -90,6 +91,12 @@ def detect_and_draw_on_image(
 
 model = load_model(MODEL_PATH)
 
+if 'final_image' not in st.session_state:
+    st.session_state.final_image = None
+
+if 'stats' not in st.session_state:
+    st.session_state.stats = None
+
 # UI untuk unggah file
 uploaded_file = st.file_uploader(
     "Pilih sebuah gambar...", 
@@ -146,7 +153,7 @@ if uploaded_file is not None:
             with m_col3:
                 st.metric(label="Kosong", value=stats['empty'])
     else:
-        st.info("Silakan unggah sebuah gambar untuk memulai.")
+        st.info("Silakan upload gambar untuk memulai.")
 
 else:
     st.info("Silakan unggah sebuah gambar untuk memulai.")
