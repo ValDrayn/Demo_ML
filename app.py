@@ -29,7 +29,7 @@ selected_model_path = model_options[selected_model_name]  # Get the correspondin
 def load_model(model_path):
     try:
         model = YOLO(model_path)
-        model.to('cpu')
+        # model.to('cpu')
         return model
     except Exception as e:
         st.error(f"Model Failed to Load: {e}")
