@@ -145,7 +145,7 @@ if uploaded_file is not None:
         if model is not None:
             # Loading circle
             with col3:
-                with st.spinner('Memproses...'):
+                with st.spinner('Processing...'):
                     final_image, stats = detect_and_draw_on_image(
                         input_image=image,
                         model=model,
