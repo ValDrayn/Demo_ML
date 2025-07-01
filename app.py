@@ -2,7 +2,6 @@ import streamlit as st
 from ultralytics import YOLO
 import os
 from PIL import Image
-import cv2
 import numpy as np
 
 st.set_page_config(
@@ -41,7 +40,7 @@ def detect_and_draw_on_image(
     conf_threshold: float = 0.25,
     iou_threshold: float = 0.45
 ) -> (np.ndarray, dict):
-    
+    import cv2
     results = model.predict(
         source=input_image,
         conf=conf_threshold,
